@@ -14,6 +14,9 @@ const userRoute = require('./api/v1/routes/user');
 const app = express();
 require('dotenv').config();
 
+// Init webhooks
+require('./webhooks/User.webhooks');
+
 // Initialize costum modules
 const { swaggerSpecs, swaggerOptions } = require('./config/swagger');
 

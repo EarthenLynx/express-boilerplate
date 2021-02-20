@@ -1,9 +1,14 @@
-// Init webhooks
-require('./webhooks/User.webhooks');
+// Require the environment variables
 require('dotenv').config();
 
 // Import the server module
 const app = require('./app');
+
+// Init webhooks
+require('./web/hooks/User.webhooks');
+
+// Hook up the websocket server
+require("./web/sockets/User.socket")(app);
 
 // Make the app listen on the defined port
 app.listen(process.env.PORT, () => {

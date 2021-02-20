@@ -14,6 +14,7 @@ class UserController extends EventEmitter {
           .send({ msg: 'Successfully wrote user into database', data: user });
       })
       .catch((err) => {
+        console.log(err)
         return res
           .status(500)
           .send({ msg: `An error occured while writing User: ${err}` });

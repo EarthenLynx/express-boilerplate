@@ -46,4 +46,5 @@ app.use(
 
 app.use('/user', userRoute);
 
+// Make the http server available for other modules
 module.exports = http.createServer(app);

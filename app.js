@@ -1,4 +1,5 @@
 // Initialize the base modules
+const http = require("http");
 const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
@@ -12,10 +13,6 @@ const userRoute = require('./api/v1/routes/user');
 
 // Initialize app and configs
 const app = express();
-require('dotenv').config();
-
-// Init webhooks
-require('./webhooks/User.webhooks');
 
 // Initialize costum modules
 const { swaggerSpecs, swaggerOptions } = require('./config/swagger');
@@ -46,13 +43,7 @@ app.use(
 	swaggerUi.serve,
 	swaggerUi.setup(swaggerJsdoc(swaggerSpecs), swaggerOptions)
 );
+
 app.use('/user', userRoute);
 
-app.listen(process.env.PORT, () => {
-	console.log(
-		`App listening on ${process.env.HOST}:${process.env.PORT} in ${process.env.NODE_ENV} environment`
-	);
-	console.log(
-		`Api documentation running on ${process.env.HOST}:${process.env.PORT}${process.env.API_VERSION}${process.env.PATH_DOCS}`
-	);
-});
+module.exports = http.createServer(app);

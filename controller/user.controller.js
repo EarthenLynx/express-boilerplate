@@ -2,96 +2,75 @@ const EventEmitter = require('events');
 const model = require('../model/user.model');
 
 class UserController extends EventEmitter {
-  handleWriteUser(req, res) {
-    const user = req.body;
+  async handleWriteUser(req, res) {
+    try {
+      const user = req.body;
+      const newUser = await model.writeUser(user);
 
-    model
-      .writeUser(user)
-      .then(() => {
-        this.emit('handleWriteUser', user);
-        return res
-          .status(201)
-          .send({ msg: 'Successfully wrote user into database', data: user });
-      })
-      .catch((err) => {
-        console.log(err)
-        return res
-          .status(500)
-          .send({ msg: `An error occured while writing User: ${err}` });
-      });
+      this.emit('handleWriteUser', newUser);
+      return res
+        .status(201)
+        .send({ msg: 'Successfully wrote user into database', data: user });
+    } catch (e) {
+      return res
+        .status(500)
+        .send({ msg: `An error occured while writing User: ${e}` });
+    }
   }
-  handleGetUsers(req, res) {
-    model
-      .getUser()
-      .then((data) => {
-        return res.send({
-          msg: 'Successfully fetched users from database',
-          data,
-        });
-      })
-      .catch((err) => {
-        return res
-          .status(500)
-          .send({ msg: `An error occured while writing User: ${err}` });
-      });
+  async handleGetUsers(req, res) {
+    try {
+      const users = await model.getUser();
+      return res.status(200).send(users);
+    } catch (e) {
+      return res
+        .status(500)
+        .send({ msg: `An error occured while writing User: ${e}` });
+    }
   }
-  handleGetUserById(req, res) {
-    const id = req.params.id;
+  async handleGetUserById(req, res) {
+    try {
+      const id = req.params.id;
+      const users = await model.getUserById(id);
+      res.status(200).send(users);
+    } catch (e) {
+      return res
+        .status(500)
+        .send({ msg: `An error occured while getting User: ${err}` });
+    }
+  }
 
-    model
-      .getUserById(id)
-      .then((data) => {
-        return res.send({
-          msg: 'Successfully fetched users from database',
-          data,
-        });
-      })
-      .catch((err) => {
-        return res
-          .status(500)
-          .send({ msg: `An error occured while getting User: ${err}` });
+  async handleUpdateUserById(req, res) {
+    try {
+      const id = req.params.id;
+      const payload = req.body;
+      const updatedUser = await model.updateUserById(id, payload);
+      return res.status(200).send('OK');
+    } catch (e) {
+      return res.send({
+        status: 'error',
+        msg: 'User could not be updated',
+        err,
       });
+    }
   }
-  handleUpdateUserById(req, res) {
-    const id = req.params.id;
-    const payload = req.body;
 
-    model
-      .updateUserById(id, payload)
-      .then((data) => {
-        return res.send({
-          status: 'success',
-          msg: `User with id ${id} has been updated successfully`,
-          data,
-        });
-      })
-      .catch((err) => {
-        return res.send({
-          status: 'error',
-          msg: 'User could not be updated',
-          err,
-        });
-      });
-  }
-  handleDeleteUserById(req, res) {
-    const id = req.params.id;
+  async handleDeleteUserById(req, res) {
+    try {
+      const id = req.params.id;
+      const deletedUser = await model.deleteUserById(id);
 
-    model
-      .deleteUserById(id)
-      .then(() => {
-        this.emit('handleDeleteUser', id);
-        return res.send({
-          status: 'success',
-          msg: `User with id ${id} has been deleted successfully`,
-        });
-      })
-      .catch((err) => {
-        return res.status(500).send({
-          status: 'error',
-          msg: 'User could not be deleted',
-          err,
-        });
+      this.emit('handleDeleteUser', id);
+      return res.send({
+        status: 'success',
+        msg: `User with id ${id} has been deleted successfully`,
       });
+    } catch (e) {
+      return res.status(500).send({
+        status: 'error',
+        msg: 'User could not be deleted',
+        e,
+      });
+    }
   }
 }
 

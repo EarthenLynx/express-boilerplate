@@ -60,7 +60,7 @@ class UserController extends EventEmitter {
       const deletedUser = await model.deleteUserById(id);
 
       this.emit('handleDeleteUser', id);
-      return res.send({
+      return res.status(204).send({
         status: 'success',
         msg: `User with id ${id} has been deleted successfully`,
       });
